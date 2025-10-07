@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MemeCoinsApp — Demo Page</title>
+  <style>
+    :root{
+      --bg:#0d0d0d; --card:#121212; --muted:#9aa0a6; --accent1:#7F00FF; --accent2:#00FFFF;
+      --toast-bg: rgba(255,255,255,0.08);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(135deg,#0b0b0b 0%, #121215 100%);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#e6eef6}
+    .container{max-width:980px;margin:36px auto;padding:24px}
+    .banner{display:flex;align-items:center;justify-content:space-between;padding:18px;border-radius:12px;background:linear-gradient(90deg, rgba(127,0,255,0.06), rgba(0,255,240,0.03));box-shadow:0 6px 24px rgba(0,0,0,0.6)}
+    .title{display:flex;align-items:center;gap:14px}
+    .logo{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%, rgba(127,0,255,0.18), rgba(0,255,240,0.08));box-shadow:0 6px 20px rgba(127,0,255,0.06)}
+    .logo svg{width:44px;height:44px}
+    h1{margin:0;font-size:20px}
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent1),var(--accent2));border:none;color:#071018;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px}
+    .small{font-size:13px;color:var(--muted)}
+    .center{display:flex;justify-content:center;margin-top:28px}
+    .card{background:var(--card);padding:16px;border-radius:12px;margin-top:18px}
+    /* toast */
+    #toast{position:fixed;right:20px;bottom:20px;min-width:220px;padding:12px 16px;border-radius:10px;background:var(--toast-bg);backdrop-filter:blur(6px);color:#dff6f3;box-shadow:0 6px 30px rgba(0,0,0,0.6);opacity:0;transform:translateY(8px);transition:all .28s ease}
+    #toast.show{opacity:1;transform:translateY(0)}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal-backdrop.show{display:flex}
+    .modal{width:320px;background:linear-gradient(180deg,#0f0f12,#121214);padding:18px;border-radius:12px;color:#eaf9f6;box-shadow:0 12px 40px rgba(0,0,0,0.7);text-align:center}
+    .qr{width:200px;height:200px;margin:12px auto;border-radius:8px;padding:8px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center}
+    .hstack{display:flex;gap:8px;justify-content:center;align-items:center}
+    .lang-switch{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;border-radius:8px;color:var(--muted);cursor:pointer}
+    footer{margin-top:26px;color:var(--muted);font-size:13px;text-align:center}
+    .sponsor-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#ffd7e6;padding:8px 12px;border-radius:8px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="banner">
+      <div class="title">
+        <div class="logo" aria-hidden="true">
+          <!-- simple M logo svg -->
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="M logo">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#00FFFF"/>
+                <stop offset="1" stop-color="#7F00FF"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="100" height="100" rx="18" fill="url(#g1)"></rect>
+            <text x="50" y="65" font-size="60" text-anchor="middle" fill="#071018" font-family="Arial, sans-serif" font-weight="700">M</text>
+          </svg>
+        </div>
+        <div>
+          <h1 id="pageTitle">MemeCoinsApp</h1>
+          <div class="small" id="subtitle">Следи за курсом мемкоинов в реальном времени</div>
+        </div>
+      </div>
+      <div class="actions">
+        <div>
+          <button id="langBtn" class="lang-switch">RU</button>
+        </div>
+        <div class="hstack">
+          <button id="downloadBtn" class="btn">⬇️ Скачать APK</button>
+          <button id="sponsorBtn" class="sponsor-btn">❤️ Sponsor</button>
+        </div>
+        <div class="small" style="text-align:center;margin-top:8px">Ссылка ведёт на страницу артефактов GitHub — замените <code>&lt;OWNER&gt;</code> и <code>&lt;REPO&gt;</code> на ваши значения.</div>
+      </div>
+    </div>
+
+    <div class="card" id="contentCard">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Текущие мем-коины</strong></div>
+        <div class="small" id="statusIndicator">🔵 Online</div>
+      </div>
+      <div style="margin-top:12px" id="coinsList">
+        <!-- placeholder rows -->
+        <div class="small">pepe — $0.000000123</div>
+        <div class="small">dogecoin — $0.07</div>
+        <div class="small">token6900 — N/A</div>
+      </div>
+
+      <div class="center">
+        <button id="refreshBtn" class="btn ghost">🔄 Обновить сейчас</button>
+      </div>
+      <div class="center small" style="margin-top:10px">
+        <div id="countdown">Автообновление через: 05:00</div>
+        <div class="small" style="text-align:center;margin-top:8px">Ссылка ведёт на страницу артефактов GitHub — замените <code>&lt;OWNER&gt;</code> и <code>&lt;REPO&gt;</code> на ваши значения.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="small">Версия 4 • Последнее обновление: <span id="verDate">6 октября 2025</span></div>
+        <div class="small">Разработано с ❤️ на Kotlin</div>
+        <div class="small" style="text-align:center;margin-top:8px">Ссылка ведёт на страницу артефактов GitHub — замените <code>&lt;OWNER&gt;</code> и <code>&lt;REPO&gt;</code> на ваши значения.</div>
+      </div>
+    </div>
+
+    <footer>
+      <div>© 2025 MemeCoinsApp</div>
+    </footer>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast">Адрес скопирован в буфер обмена</div>
+
+  <!-- Modal for Sponsor / QR -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div id="modalTitle"><strong>Поддержать проект</strong></div>
+      <div style="margin-top:8px" class="small">BEP-20 адрес</div>
+      <div class="qr" id="qrcode"></div>
+      <div style="margin-top:8px" class="hstack">
+        <button id="copyAddressBtn" class="btn ghost">📋 Скопировать адрес</button>
+        <button id="closeModalBtn" class="btn">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QRCode.js (minified small version embedded) -->
+  <script>
+  /*! QRCode.js - minimal embedding for demo (tiny adapted implementation) */
+  (function(){function QR8(n){this._el=n}QR8.prototype.makeCode=function(t){this._el.innerHTML='';var c=document.createElement('div');c.style.width='180px';c.style.height='180px';c.style.background='#fff';c.style.display='flex';c.style.alignItems='center';c.style.justifyContent='center';c.style.color='#000';c.style.fontWeight='700';c.style.fontFamily='monospace';c.textContent=t.substring(0,12)+'...';this._el.appendChild(c)};window.SimpleQR=QR8})();
+  </script>
+
+  <script>
+    // Config
+    const ADDRESS = "0x7FFf306C119Bebb691be38b5904F5A6b79aAFb90";
+    let lang = 'ru';
+
+    // Elements
+    const toast = document.getElementById('toast');
+    const copyBtn = document.getElementById('copyAddressBtn');
+    const modal = document.getElementById('modalBackdrop');
+    const sponsorBtn = document.getElementById('sponsorBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const qrcodeEl = document.getElementById('qrcode');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const countdownEl = document.getElementById('countdown');
+    const langBtn = document.getElementById('langBtn');
+
+    // Init QR
+    const qr = new SimpleQR(qrcodeEl);
+    qr.makeCode(ADDRESS);
+
+    function showToast(text, ms=2200){ toast.textContent = text; toast.classList.add('show'); setTimeout(()=>{toast.classList.remove('show')}, ms); }
+
+    copyBtn.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(ADDRESS).then(()=>{
+        showToast('Адрес скопирован в буфер обмена');
+      }).catch(()=>{
+        showToast('Не удалось скопировать адрес');
+      });
+    });
+
+    sponsorBtn.addEventListener('click', ()=>{ modal.classList.add('show'); qr.makeCode(ADDRESS); });
+    closeModalBtn.addEventListener('click', ()=>{ modal.classList.remove('show'); });
+
+    // Also make Support via sponsor button show modal as fallback
+    document.getElementById('sponsorBtn').addEventListener('click', ()=>{ modal.classList.add('show'); });
+
+    // Header buttons
+    downloadBtn.addEventListener('click', ()=>{ window.open('https://github.com/<OWNER>/<REPO>/actions/artifacts','_blank'); showToast('Откроется страница артефактов'); });
+    refreshBtn.addEventListener('click', ()=>{ performUpdate(true); });
+
+    // Copy in modal also via keyboard ctrl+c
+    modal.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key==='c'){ navigator.clipboard.writeText(ADDRESS); showToast('Адрес скопирован в буфер обмена'); } });
+
+    // Language switch
+    langBtn.addEventListener('click', ()=>{
+      lang = (lang==='ru') ? 'en' : 'ru'; updateLang();
+    });
+    function updateLang(){
+      if(lang==='ru'){
+        langBtn.textContent='RU';
+        document.getElementById('pageTitle').textContent='MemeCoinsApp';
+        document.getElementById('subtitle').textContent='Следи за курсом мемкоинов в реальном времени';
+        refreshBtn.textContent='🔄 Обновить сейчас';
+        downloadBtn.textContent='⬇️ Скачать APK';
+        document.getElementById('verDate').textContent='6 октября 2025';
+      } else {
+        langBtn.textContent='EN';
+        document.getElementById('pageTitle').textContent='MemeCoinsApp';
+        document.getElementById('subtitle').textContent='Track meme coins in real-time';
+        refreshBtn.textContent='🔄 Refresh now';
+        downloadBtn.textContent='⬇️ Download APK';
+        document.getElementById('verDate').textContent='October 6, 2025';
+      }
+    }
+    updateLang();
+
+    // Auto-update timer (5 minutes)
+    let counter = 300;
+    function formatCounter(s){ const m = Math.floor(s/60); const sec = s%60; return `Автообновление через: ${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+    function performUpdate(isManual=false){
+      statusIndicator.textContent = '🟡 Updating...';
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=pepe,dogecoin,token6900,dogwifhat,shiba-inu&vs_currencies=usd')
+        .then(r=>r.json())
+        .then(data=>{
+          // update list (simple)
+          const list = document.getElementById('coinsList');
+          list.innerHTML='';
+          [['pepe','PEPE'],['dogecoin','DOGE'],['token6900','T6900'],['dogwifhat','WIF'],['shiba-inu','SHIB']].forEach(([id,label])=>{
+            const v = data[id]?.usd ? ('$'+data[id].usd) : 'N/A';
+            const d = document.createElement('div'); d.className='small'; d.textContent = label + ' — ' + v; list.appendChild(d);
+          });
+          statusIndicator.textContent = '🟢 Online';
+          if(isManual) showToast(lang==='ru' ? 'Данные обновлены' : 'Data updated');
+        })
+        .catch(err=>{
+          statusIndicator.textContent = '🔴 Ошибка соединения';
+          showToast(lang==='ru' ? '⚠️ Не удалось обновить данные' : '⚠️ Failed to update data');
+        });
+      // reset counter
+      counter = 300;
+    }
+
+    // countdown tick
+    setInterval(()=>{
+      counter -= 1;
+      if(counter <= 0){ performUpdate(false); counter = 300; }
+      countdownEl.textContent = formatCounter(counter);
+    }, 1000);
+
+    // initial update
+    performUpdate(false);
+  </script>
+
+</body>
+</html>
