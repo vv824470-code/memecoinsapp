@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # позволяет запускать вручную через вкладку Actions
 
 jobs:
   build:
@@ -15,24 +14,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Set up Gradle cache
-        uses: gradle/gradle-build-action@v3
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./app/gradlew
+        run: chmod +x ./MemeCoinsApp_v4/gradlew
 
-      - name: Build APK (Debug)
-        working-directory: app
+      - name: Build APK
+        working-directory: MemeCoinsApp_v4
         run: ./gradlew assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: MemeCoinsApp-v4-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: MemeCoinsApp_v4/app/build/outputs/apk/debug/*.apk
